@@ -2,47 +2,66 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import axios from "axios";
 
 const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+// Define types for the data
+interface SemesterData {
+  semester: number;
+  sgpa: number;
+}
+
+interface PerformanceData {
+  cgpa: number;
+  semesterData: SemesterData[];
+}
+
 export function ResultsOverview() {
-  const [performanceData, setPerformanceData] = useState<any>(null);
+  const [performanceData, setPerformanceData] = useState<PerformanceData | null>(null);
   const [usn, setUsn] = useState<string | null>(null);
 
   useEffect(() => {
-    // Safely access localStorage to fetch `id` and derive `usn`
+    // Ensure that the code runs only on the client side (avoid SSR issues)
     if (typeof window !== "undefined") {
       const id = localStorage.getItem("id");
       if (id) {
-        setUsn(id.substring(0, 10));
+        setUsn(id.substring(0, 10)); // Extract USN from the ID stored in localStorage
       }
     }
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once after initial render
 
   useEffect(() => {
     if (usn) {
-      // Fetch performance data from the backend
+      // Fetch performance data from the backend if usn is available
       axios
         .get(`${url}/api/performance/${usn}`)
         .then((response) => {
-          setPerformanceData(response.data);
+          setPerformanceData(response.data); // Set the performance data received from the backend
         })
         .catch((error) => {
           console.error("There was an error fetching the performance data:", error);
         });
     }
-  }, [usn]);
+  }, [usn]); // Dependency on `usn` so the fetch is triggered when it changes
 
   if (!performanceData) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // Show loading state until the data is fetched
   }
 
   const { cgpa, semesterData } = performanceData;
 
   if (!semesterData || semesterData.length === 0) {
-    return <div>No performance data available.</div>;
+    return <div>No performance data available.</div>; // Show if there is no semester data
   }
 
   return (

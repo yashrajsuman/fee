@@ -1,10 +1,15 @@
+import Image from "next/image";
+
 export function Logo() {
   return (
     <div className="relative overflow-hidden">
-      <img
-        src="logo.jpg" // Path relative to the 'public' folder
+      <Image
+        src="/logo.jpg" // Path relative to the 'public' folder
         alt="College Management Logo"
-        className="object-cover w-full h-full"
+        layout="responsive" // Ensures responsiveness
+        width={200} // Adjust as per your requirements
+        height={100} // Adjust as per your requirements
+        priority // Optimizes for LCP by preloading
       />
     </div>
   );

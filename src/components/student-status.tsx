@@ -1,21 +1,29 @@
-'use client';  // Make sure the component is client-side
+'use client';  // Ensure this component is client-side
 
 import { useState, useEffect } from 'react';
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-const url=process.env.NEXT_PUBLIC_BACKEND_URL;
+
+const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export function StudentStats() {
   const [feesData, setFeesData] = useState({ total: 0, remaining: 0 });
   const [performanceData, setPerformanceData] = useState({ latestSgpa: 'N/A', cgpa: 'N/A' });
+  const [usn, setUsn] = useState(''); // State to store USN
 
-  const id = localStorage.getItem('id'); // Assuming ID is stored in localStorage
-  const usn = id ? id.substring(0, 10) : ''; // Extract USN from ID
+  useEffect(() => {
+    // Safely access localStorage after component mounts (client-side only)
+    if (typeof window !== 'undefined') {
+      const id = localStorage.getItem('id');
+      const extractedUsn = id ? id.substring(0, 10) : '';
+      setUsn(extractedUsn);
+    }
+  }, []); // Run once after initial render
 
   useEffect(() => {
     if (usn) {
-      // Fetch the fee data by USN
+      // Fetch fee data by USN
       fetch(`${url}/api/feeS/getFeesByUsn/${usn}`)
         .then((response) => response.json())
         .then((data) => {
@@ -26,11 +34,11 @@ export function StudentStats() {
         })
         .catch((error) => console.error('Error fetching fee data:', error));
 
-      // Fetch the performance data by USN
+      // Fetch performance data by USN
       fetch(`${url}/api/performance/${usn}`)
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);  // Log the API response to check if data is valid
+          console.log(data); // Log to check if data is valid
 
           if (data && data.semesterData && data.semesterData.length > 0) {
             const latestSgpa = data.semesterData[data.semesterData.length - 1].sgpa || 'N/A';
@@ -47,7 +55,7 @@ export function StudentStats() {
         })
         .catch((error) => console.error('Error fetching performance data:', error));
     }
-  }, [usn]);
+  }, [usn]); // Trigger this effect whenever `usn` changes
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

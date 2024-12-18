@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,6 +39,7 @@ export function FeePaymentForm() {
   const [userUSN, setUserUSN] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
+  // Ensure this code runs only on the client side
   useEffect(() => {
     if (typeof window !== "undefined") {
       const id = localStorage.getItem("id");
@@ -47,24 +48,14 @@ export function FeePaymentForm() {
         setUserEmail(id);
       }
     }
-  }, []);
+  }, []); // Empty dependency array ensures this only runs once after initial render
 
-  useEffect(() => {
-    let interval: number | undefined;
-    if (showQR && timer > 0) {
-      interval = window.setInterval(() => {
-        setTimer((prevTimer) => prevTimer - 1);
-      }, 1000);
-    } else if (timer === 0) {
-      handlePaymentUpdate();
-      setShowDialog(true);
+  const handlePaymentUpdate = useCallback(async () => {
+    if (!userUSN || !userEmail) {
+      toast.error("Missing user data. Please login again.");
+      return;
     }
-    return () => {
-      if (interval !== undefined) clearInterval(interval);
-    };
-  }, [showQR, timer]);
 
-  async function handlePaymentUpdate() {
     try {
       const response = await fetch(`${url}/api/fee/updateAmount`, {
         method: "POST",
@@ -83,16 +74,33 @@ export function FeePaymentForm() {
       toast.success("Payment updated successfully! Receipt sent to email.");
     } catch (error) {
       console.error("Error updating payment:", error);
-      toast.error("Failed to update payment.");
+      toast.error("Failed to update payment. Please try again.");
     }
-  }
+  }, [userUSN, amount, userEmail]);
+
+  useEffect(() => {
+    let interval: number | undefined;
+    if (showQR && timer > 0) {
+      interval = window.setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    } else if (timer === 0) {
+      handlePaymentUpdate();
+      setShowDialog(true);
+    }
+    return () => {
+      if (interval !== undefined) clearInterval(interval);
+    };
+  }, [showQR, timer, handlePaymentUpdate]);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
+
     if (!paymentMethod) {
       toast.error("Please select a payment method.");
       return;
     }
+
     if (parseInt(amount) < 10000 || parseInt(amount) > 100000) {
       toast.error("Please enter an amount between ₹10,000 and ₹100,000.");
       return;

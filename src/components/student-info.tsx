@@ -2,16 +2,28 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-const url=process.env.NEXT_PUBLIC_BACKEND_URL;
+
+const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export function StudentInfo() {
   const [studentData, setStudentData] = useState({ name: '', usn: '' });
-  const id = localStorage.getItem('id'); // Get ID from localStorage
-  const usn = id ? id.substring(0, 10) : ''; // Extract USN from the ID
+  const [usn, setUsn] = useState(''); // State to hold USN
+
+  useEffect(() => {
+    // Safely access localStorage on client side
+    if (typeof window !== 'undefined') {
+      const id = localStorage.getItem('id'); // Get ID from localStorage
+      if (id) {
+        const extractedUsn = id.substring(0, 10); // Extract USN from the ID
+        setUsn(extractedUsn); // Set USN in state
+      }
+    }
+  }, []); // Run this only once on component mount
 
   useEffect(() => {
     if (usn) {
-      fetch(`${url}/api/getNameByUsn/${usn}`) // Backend API to fetch name by USN
+      // Fetch student data by USN
+      fetch(`${url}/api/getNameByUsn/${usn}`)
         .then((response) => response.json())
         .then((data) => {
           setStudentData((prevState) => ({
@@ -22,7 +34,7 @@ export function StudentInfo() {
         })
         .catch((error) => console.error('Error fetching data:', error));
     }
-  }, [usn]);
+  }, [usn]); // Re-run this whenever `usn` changes
 
   return (
     <Card>
