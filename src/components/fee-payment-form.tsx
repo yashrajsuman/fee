@@ -3,7 +3,13 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radiogroup";
@@ -17,7 +23,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-const url=process.env.NEXT_PUBLIC_BACKEND_URL;
+
+const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export function FeePaymentForm() {
   const [amount, setAmount] = useState("");
@@ -29,22 +36,32 @@ export function FeePaymentForm() {
   const [showDialog, setShowDialog] = useState(false);
   const router = useRouter();
 
-  const id = localStorage.getItem('id'); // Get ID from localStorage
-  const usn = id ? id.substring(0, 10) : ''; // Extract USN from the ID
-  const userUSN = usn; // Assume USN is stored in localStorage
-  const userEmail = localStorage.getItem('id'); // Assume email is stored in localStorage
+  const [userUSN, setUserUSN] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    let interval;
+    if (typeof window !== "undefined") {
+      const id = localStorage.getItem("id");
+      if (id) {
+        setUserUSN(id.substring(0, 10));
+        setUserEmail(id);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    let interval: number | undefined;
     if (showQR && timer > 0) {
-      interval = setInterval(() => {
+      interval = window.setInterval(() => {
         setTimer((prevTimer) => prevTimer - 1);
       }, 1000);
     } else if (timer === 0) {
       handlePaymentUpdate();
-      setShowDialog(true); // Call API to update payment
+      setShowDialog(true);
     }
-    return () => clearInterval(interval);
+    return () => {
+      if (interval !== undefined) clearInterval(interval);
+    };
   }, [showQR, timer]);
 
   async function handlePaymentUpdate() {
@@ -64,28 +81,39 @@ export function FeePaymentForm() {
       }
 
       toast.success("Payment updated successfully! Receipt sent to email.");
-      
     } catch (error) {
       console.error("Error updating payment:", error);
       toast.error("Failed to update payment.");
     }
   }
 
-  async function onSubmit(event) {
+  async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
+    if (!paymentMethod) {
+      toast.error("Please select a payment method.");
+      return;
+    }
+    if (parseInt(amount) < 10000 || parseInt(amount) > 100000) {
+      toast.error("Please enter an amount between ₹10,000 and ₹100,000.");
+      return;
+    }
+
     setIsLoading(true);
 
     const upiLink = `upi://pay?pa=7050344911@ybl&pn=Atria-Institute-Of-Technology&mc=merchant-code&tid=s-123&tr=y-123&tn=FeePayment&am=${amount}&cu=INR`;
     setQrValue(upiLink);
     setShowQR(true);
     setTimer(30);
+    setIsLoading(false);
   }
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center">Fee Payment</CardTitle>
-        <CardDescription className="text-center">Complete your fee payment securely</CardDescription>
+        <CardDescription className="text-center">
+          Complete your fee payment securely
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {!showQR ? (
