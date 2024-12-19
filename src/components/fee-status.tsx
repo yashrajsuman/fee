@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-const url=process.env.NEXT_PUBLIC_BACKEND_URL;
+
+const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export function FeeStatus() {
   const [feeData, setFeeData] = useState({
@@ -11,19 +12,32 @@ export function FeeStatus() {
     amountPaid: 0,
     remainingBalance: 0,
   });
+  const [usn, setUsn] = useState("");
 
-  const id = localStorage.getItem('id'); // Assuming student ID is stored in localStorage
-  const usn = id ? id.substring(0, 10) : ''; // Extract USN from the student ID
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // Access `localStorage` safely on the client side
+      const id = localStorage.getItem('id');
+      if (id) {
+        setUsn(id.substring(0, 10)); // Extract USN from the ID
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (usn) {
       // Fetch fee data by USN
       fetch(`${url}/api/feeS/getFeesByUsn/${usn}`)
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Error fetching fee data: ${response.statusText}`);
+          }
+          return response.json();
+        })
         .then((data) => {
           setFeeData({
             totalFee: data.total_fee || 0,
-            amountPaid: (data.total_fee-data.remaining_balance) || 0,
+            amountPaid: (data.total_fee - data.remaining_balance) || 0,
             remainingBalance: data.remaining_balance || 0,
           });
         })
@@ -50,7 +64,7 @@ export function FeeStatus() {
               <p className="text-2xl font-bold">₹{feeData.amountPaid}</p>
             </div>
           </div>
-          <Progress value={(feeData.amountPaid / feeData.totalFee) * 100} />
+          <Progress value={(feeData.totalFee ? (feeData.amountPaid / feeData.totalFee) * 100 : 0)} />
           <p className="text-sm text-muted-foreground">Remaining Balance: ₹{feeData.remainingBalance}</p>
         </div>
       </CardContent>

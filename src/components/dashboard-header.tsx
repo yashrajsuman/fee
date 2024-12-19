@@ -1,16 +1,24 @@
-'use client'; // Add this line to mark this file as a client component
+'use client'; // Mark this file as a client component
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BellIcon } from "lucide-react";
-const url=process.env.NEXT_PUBLIC_BACKEND_URL;
+
+const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export function DashboardHeader() {
   const [name, setName] = useState(""); // State to store the name
-  const id = localStorage.getItem("id");
+  const [usn, setUsn] = useState(""); // State to store the USN extracted from the ID
 
-  // Extract the USN from the ID
-  const usn = id ? id.substring(0, 10) : "";
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // Ensure localStorage access only happens on the client side
+      const id = localStorage.getItem("id");
+      if (id) {
+        setUsn(id.substring(0, 10)); // Extract USN from the ID
+      }
+    }
+  }, []); // Run once when the component mounts
 
   useEffect(() => {
     if (usn) {
@@ -25,7 +33,7 @@ export function DashboardHeader() {
           console.error("Error fetching name:", err);
         });
     }
-  }, [usn]); // Fetch name when the USN changes or component mounts
+  }, [usn]); // Fetch name when the USN changes
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
