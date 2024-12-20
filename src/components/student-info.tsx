@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Cookies from "js-cookie"; 
 
 const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -10,9 +11,9 @@ export function StudentInfo() {
   const [usn, setUsn] = useState(''); // State to hold USN
 
   useEffect(() => {
-    // Safely access localStorage on client side
+    
     if (typeof window !== 'undefined') {
-      const id = localStorage.getItem('id'); // Get ID from localStorage
+      const id = Cookies.get("authToken"); 
       if (id) {
         const extractedUsn = id.substring(0, 10); // Extract USN from the ID
         setUsn(extractedUsn); // Set USN in state

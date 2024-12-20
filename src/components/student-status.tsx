@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import Cookies from "js-cookie"; 
 
 const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -13,9 +14,9 @@ export function StudentStats() {
   const [usn, setUsn] = useState(''); // State to store USN
 
   useEffect(() => {
-    // Safely access localStorage after component mounts (client-side only)
+    
     if (typeof window !== 'undefined') {
-      const id = localStorage.getItem('id');
+      const id = Cookies.get("authToken");
       const extractedUsn = id ? id.substring(0, 10) : '';
       setUsn(extractedUsn);
     }

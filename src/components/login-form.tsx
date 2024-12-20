@@ -1,46 +1,49 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import Link from "next/link"
-const url=process.env.NEXT_PUBLIC_BACKEND_URL;
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Link from "next/link";
+import Cookies from "js-cookie"; // Add this library for cookie handling
+const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export function LoginForm() {
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   console.log(process.env.NEXT_PUBLIC_BACKEND_URL);
-  async function onSubmit(event: React.FormEvent) {
-    event.preventDefault()
-    setIsLoading(true)
 
-    const form = event.target as HTMLFormElement
-    const username = (form.username as HTMLInputElement).value
-    const password = (form.password as HTMLInputElement).value
+  async function onSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    setIsLoading(true);
+
+    const form = event.target as HTMLFormElement;
+    const username = (form.username as HTMLInputElement).value;
+    const password = (form.password as HTMLInputElement).value;
 
     try {
       const response = await fetch(`${url}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (response.ok) {
-        //alert("Login successful!")
-        localStorage.setItem("id",username)
-        router.push("/dashboard")
+        
+        // Store the authentication token in a cookie
+        Cookies.set("authToken", username, { expires: 7, path: "/" }); // Adjust expiration as needed
+        router.push("/dashboard");
       } else {
-        alert(data.message || "Login failed")
+        alert(data.message || "Login failed");
       }
     } catch (err) {
-      console.error(err)
-      alert("An error occurred. Please try again.")
+      console.error(err);
+      alert("An error occurred. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
@@ -50,6 +53,7 @@ export function LoginForm() {
         <Label htmlFor="username" className="text-white">Username</Label>
         <Input
           id="username"
+          name="username"
           placeholder="Enter your username"
           required
           type="text"
@@ -60,6 +64,7 @@ export function LoginForm() {
         <Label htmlFor="password" className="text-white">Password</Label>
         <Input
           id="password"
+          name="password"
           placeholder="Enter your password"
           required
           type="password"
@@ -75,5 +80,5 @@ export function LoginForm() {
         </Link>
       </div>
     </form>
-  )
+  );
 }

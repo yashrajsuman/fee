@@ -23,6 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import Cookies from "js-cookie"; 
 
 const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -42,7 +43,7 @@ export function FeePaymentForm() {
   // Ensure this code runs only on the client side
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const id = localStorage.getItem("id");
+      const id =Cookies.get("authToken");
       if (id) {
         setUserUSN(id.substring(0, 10));
         setUserEmail(id);

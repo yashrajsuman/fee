@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BellIcon } from "lucide-react";
+import Cookies from "js-cookie"; 
 
 const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -10,10 +11,12 @@ export function DashboardHeader() {
   const [name, setName] = useState(""); // State to store the name
   const [usn, setUsn] = useState(""); // State to store the USN extracted from the ID
 
+  
+
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // Ensure localStorage access only happens on the client side
-      const id = localStorage.getItem("id");
+      
+      const id = Cookies.get("authToken");
       if (id) {
         setUsn(id.substring(0, 10)); // Extract USN from the ID
       }

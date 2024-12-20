@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import axios from "axios";
+import Cookies from "js-cookie"; 
 
 const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -33,7 +34,7 @@ export function ResultsOverview() {
   useEffect(() => {
     // Ensure that the code runs only on the client side (avoid SSR issues)
     if (typeof window !== "undefined") {
-      const id = localStorage.getItem("id");
+      const id =Cookies.get("authToken");
       if (id) {
         setUsn(id.substring(0, 10)); // Extract USN from the ID stored in localStorage
       }

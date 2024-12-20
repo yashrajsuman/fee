@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import Cookies from "js-cookie"; 
 
 const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -16,8 +17,8 @@ export function FeeStatus() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // Access `localStorage` safely on the client side
-      const id = localStorage.getItem('id');
+      
+      const id = Cookies.get("authToken");
       if (id) {
         setUsn(id.substring(0, 10)); // Extract USN from the ID
       }

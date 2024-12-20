@@ -1,14 +1,16 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { HomeIcon, CreditCardIcon, GraduationCapIcon, LogOutIcon } from 'lucide-react'
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { HomeIcon, CreditCardIcon, GraduationCapIcon, LogOutIcon } from "lucide-react";
+import Cookies from "js-cookie";
 
 export function DashboardNav() {
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const router = useRouter();
 
   const links = [
     {
@@ -26,7 +28,19 @@ export function DashboardNav() {
       href: "/dashboard/results",
       icon: GraduationCapIcon,
     },
-  ]
+  ];
+
+  // Logout function to clear cookies
+  const handleLogout = () => {
+    // Delete the auth token or any other cookies
+    Cookies.remove("authToken", { path: "/" }); // Adjust the cookie name and path as needed
+
+    // Optionally, clear local storage or any other client-side storage
+    localStorage.clear();
+
+    // Redirect to the login page
+    router.push("/");
+  };
 
   return (
     <nav className="relative border-r bg-muted/40 w-[250px] hidden md:block">
@@ -52,15 +66,12 @@ export function DashboardNav() {
           </div>
         </div>
         <div className="mt-auto px-7">
-          <Button variant="ghost" className="w-full justify-start" asChild>
-            <Link href="/">
-              <LogOutIcon className="mr-2 h-4 w-4" />
-              Logout
-            </Link>
+          <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
+            <LogOutIcon className="mr-2 h-4 w-4" />
+            Logout
           </Button>
         </div>
       </ScrollArea>
     </nav>
-  )
+  );
 }
-
