@@ -1,15 +1,19 @@
-import { Logo } from "@/components/logo"
-import { LoginForm } from "@/components/login-form"
+import { DashboardHeader } from "@/components/dashboard-header"
+import { DashboardNav } from "@/components/dashboard-nav"
+import { DashboardShell } from "@/components/dashboard-shell"
+import { StudentInfo } from "@/components/student-info"
+import { StudentStats } from "@/components/student-status"
 
-export default function LoginPage() {
+export default function DashboardPage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-zinc-900 to-zinc-950">
-      <div className="w-full max-w-md px-8 py-12 bg-white/5 backdrop-blur-xl rounded-2xl shadow-2xl">
-        <div className="flex flex-col items-center space-y-8">
-          <Logo />
-          <h1 className="text-2xl font-bold text-white">Fee Payment Portal</h1>
-          <LoginForm />
-        </div>
+    <div className="flex min-h-screen">
+      <DashboardNav />
+      <div className="flex-1">
+        <DashboardHeader />
+        <DashboardShell>
+          <StudentInfo />
+          <StudentStats />
+        </DashboardShell>
       </div>
     </div>
   )

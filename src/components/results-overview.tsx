@@ -43,9 +43,15 @@ export function ResultsOverview() {
 
   useEffect(() => {
     if (usn) {
+      const token=localStorage.getItem("jwt");
       // Fetch performance data from the backend if usn is available
       axios
-        .get(`${url}/api/performance/${usn}`)
+        .get(`${url}/performance/${usn}`,{
+        method:"GET",
+        headers:{
+          "Authorization":`Bearer ${token}`
+        }
+      })
         .then((response) => {
           setPerformanceData(response.data); // Set the performance data received from the backend
         })

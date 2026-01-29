@@ -27,8 +27,15 @@ export function FeeStatus() {
 
   useEffect(() => {
     if (usn) {
+      const token=localStorage.getItem("jwt");
       // Fetch fee data by USN
-      fetch(`${url}/api/feeS/getFeesByUsn/${usn}`)
+      fetch(`${url}/getFeesByUsn/${usn}`,{
+        method:"GET",
+        headers:{
+          "Content-Type": "application/json",
+          "Authorization":`Bearer ${token}`
+        }
+      })
         .then((response) => {
           if (!response.ok) {
             throw new Error(`Error fetching fee data: ${response.statusText}`);

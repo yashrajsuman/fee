@@ -24,9 +24,16 @@ export function DashboardHeader() {
   }, []); // Run once when the component mounts
 
   useEffect(() => {
+    const token=localStorage.getItem("jwt");
     if (usn) {
       // Fetch the name from the backend using the USN
-      fetch(`${url}/api/getNameByUsn/${usn}`)
+      fetch(`${url}/getNameByUsn/${usn}`,{
+        method:"GET",
+        headers:{
+          "Authorization":`Bearer ${token}`
+        }
+      })
+      
         .then((response) => response.json())
         .then((data) => {
           // Set the name state

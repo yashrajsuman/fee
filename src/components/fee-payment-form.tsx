@@ -58,13 +58,17 @@ export function FeePaymentForm() {
     }
 
     try {
-      const response = await fetch(`${url}/api/fee/updateAmount`, {
+      const token=localStorage.getItem("jwt");
+      const response = await fetch(`${url}/updateAmount`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",
+          "Authorization":`Bearer ${token}`
+         },
+        
         body: JSON.stringify({
-          usn: userUSN,
-          amountPaid: amount,
-          email: userEmail,
+          "usn": userUSN,
+          "amount_paid": amount,
+          "email": userEmail,
         }),
       });
 

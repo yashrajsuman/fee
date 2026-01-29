@@ -23,8 +23,14 @@ export function StudentInfo() {
 
   useEffect(() => {
     if (usn) {
+      const token=localStorage.getItem("jwt");
       // Fetch student data by USN
-      fetch(`${url}/api/getNameByUsn/${usn}`)
+      fetch(`${url}/getNameByUsn/${usn}`,{
+        method:"GET",
+        headers:{
+          "Authorization":`Bearer ${token}`
+        }
+      })
         .then((response) => response.json())
         .then((data) => {
           setStudentData((prevState) => ({

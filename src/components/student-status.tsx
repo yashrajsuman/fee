@@ -9,6 +9,7 @@ import Cookies from "js-cookie";
 const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export function StudentStats() {
+  
   const [feesData, setFeesData] = useState({ total: 0, remaining: 0 });
   const [performanceData, setPerformanceData] = useState({ latestSgpa: 'N/A', cgpa: 'N/A' });
   const [usn, setUsn] = useState(''); // State to store USN
@@ -24,8 +25,16 @@ export function StudentStats() {
 
   useEffect(() => {
     if (usn) {
+      const token=localStorage.getItem("jwt");
       // Fetch fee data by USN
-      fetch(`${url}/api/feeS/getFeesByUsn/${usn}`)
+      // console.log(token)
+      fetch(`${url}/getFeesByUsn/${usn}`,{
+        method:"GET",
+        headers:{
+          "Content-Type": "application/json",
+          "Authorization":`Bearer ${token}`
+        }
+      })
         .then((response) => response.json())
         .then((data) => {
           setFeesData({
@@ -36,7 +45,13 @@ export function StudentStats() {
         .catch((error) => console.error('Error fetching fee data:', error));
 
       // Fetch performance data by USN
-      fetch(`${url}/api/performance/${usn}`)
+      fetch(`${url}/performance/${usn}`,{
+        method:"GET",
+        headers:{
+          // "Content-Type": "application/json",
+          "Authorization":`Bearer ${token}`
+        }
+      })
         .then((response) => response.json())
         .then((data) => {
           console.log(data); // Log to check if data is valid

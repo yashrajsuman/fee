@@ -12,7 +12,7 @@ const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  console.log(process.env.NEXT_PUBLIC_BACKEND_URL);
+  // console.log(process.env.NEXT_PUBLIC_BACKEND_URL);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -23,13 +23,17 @@ export function LoginForm() {
     const password = (form.password as HTMLInputElement).value;
 
     try {
-      const response = await fetch(`${url}/api/login`, {
+      const response = await fetch(`${url}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify( {"username":username, "password":password} ),
       });
 
+      // console.log(response);
+
       const data = await response.json();
+
+      localStorage.setItem("jwt",data.jwt);
 
       if (response.ok) {
         
@@ -79,6 +83,9 @@ export function LoginForm() {
           Forgot password?
         </Link>
       </div>
+      <div className="text-sm text-zinc-400 hover:text-white transition-colors">For demo Login:</div>
+      <div className="text-sm text-zinc-400 hover:text-white transition-colors">Username: 1AT22IS123@visioneer.atria.edu</div>
+      <div className="text-sm text-zinc-400 hover:text-white transition-colors">Password: ATRIA12345</div>
     </form>
   );
 }
