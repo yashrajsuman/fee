@@ -23,7 +23,7 @@
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.468.0",
     "mysql2": "^3.11.5",
-    "next": "^15.0.4",
+    "next": "15.0.7",
     "qrcode": "^1.5.4",
     "qrcode.react": "^4.1.0",
     "react": "^18.2.0",
