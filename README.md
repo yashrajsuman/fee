@@ -38,6 +38,6 @@ https://fee.centralindia.cloudapp.azure.com
 ## 🔗 API Integration
 
 The frontend communicates with the backend hosted on Azure:
-https://fee.centralindia.cloudapp.azure.com
+
 https://fee.centralindia.cloudapp.azure.com
 
